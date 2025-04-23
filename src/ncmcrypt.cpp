@@ -279,6 +279,8 @@ void NeteaseCrypt::Dump(std::string const &outputDir = "")
     while (!mFile.eof())
     {
         int n = read((char *)buffer.data(), buffer.size());
+        if (n <= 0)
+            break;
 
         for (int i = 0; i < n; i++)
         {
@@ -302,9 +304,15 @@ void NeteaseCrypt::Dump(std::string const &outputDir = "")
             }
 
             output.open(mDumpFilepath, std::ofstream::out | std::ofstream::binary);
+            if (!output.is_open()) {
+                throw std::runtime_error("Failed to open " + mDumpFilepath.string());
+            }
         }
 
         output.write((char *)buffer.data(), n);
+        if (output.fail()) {
+            throw std::runtime_error("Failed to write to " + mDumpFilepath.string());
+        }
     }
 
     output.flush();

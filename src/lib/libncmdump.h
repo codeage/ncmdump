@@ -11,4 +11,5 @@ extern "C" {
     API int Dump(NeteaseCrypt* neteaseCrypt, const char* outputPath);
     API void FixMetadata(NeteaseCrypt* neteaseCrypt);
     API void DestroyNeteaseCrypt(NeteaseCrypt* neteaseCrypt);
+    API void GetErrorMessage(char* buffer, int bufferSize);
 }

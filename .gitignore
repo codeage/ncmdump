@@ -7,3 +7,4 @@ ncmdump
 build
 
 cmake-build-*
+/.vs
