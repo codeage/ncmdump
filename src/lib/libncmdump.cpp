@@ -4,21 +4,23 @@
 
 namespace fs = std::filesystem;
 
-// Thread local storage for the last error message
-thread_local std::string lastErrorMessage;
-
 extern "C" {
 	API NeteaseCrypt* CreateNeteaseCrypt(const char* path) {
+		return new NeteaseCrypt();
+	}
+
+	API int Open(NeteaseCrypt* neteaseCrypt, const char* path) {
 		try
 		{
 			fs::path fPath = fs::u8path(path);
-			return new NeteaseCrypt(fPath.u8string());
+			neteaseCrypt->Open(fPath.u8string());
 		}
 		catch (const std::exception& e)
 		{
-			lastErrorMessage = e.what();
-			return nullptr;
+			neteaseCrypt->errorMessage(e.what());
+			return 1;
 		}
+		return 0;
 	}
 
 	API int Dump(NeteaseCrypt* neteaseCrypt, const char* outputPath) {
@@ -28,7 +30,7 @@ extern "C" {
 		}
 		catch (const std::exception& e)
 		{
-			lastErrorMessage = e.what();
+			neteaseCrypt->errorMessage(e.what());
 			return 1;
 		}
 		return 0;
@@ -41,7 +43,7 @@ extern "C" {
 		}
 		catch (const std::exception& e)
 		{
-			lastErrorMessage = e.what();
+			neteaseCrypt->errorMessage(e.what());
 		}
 	}
 
@@ -49,12 +51,19 @@ extern "C" {
 		delete neteaseCrypt;
 	}
 
-	API void GetErrorMessage(char* buffer, int bufferSize)
-	{
+	API void GetDumpFilePath(NeteaseCrypt* neteaseCrypt, char* buffer, int bufferSize) {
 		if (!buffer || bufferSize <= 0)
 			return;
 
-		std::strncpy(buffer, lastErrorMessage.c_str(), bufferSize - 1);
+		std::strncpy(buffer, neteaseCrypt->dumpFilepath().string().c_str(), bufferSize - 1);
+		buffer[bufferSize - 1] = '\0';
+	}
+
+	API void GetErrorMessage(NeteaseCrypt* neteaseCrypt, char* buffer, int bufferSize) {
+		if (!buffer || bufferSize <= 0)
+			return;
+
+		std::strncpy(buffer, neteaseCrypt->errorMessage().c_str(), bufferSize - 1);
 		buffer[bufferSize - 1] = '\0';
 	}
 }

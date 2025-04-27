@@ -31,7 +31,8 @@ void processFile(const fs::path &filePath, const fs::path &outputFolder)
 
     try
     {
-        NeteaseCrypt crypt(filePath.u8string());
+        NeteaseCrypt crypt;
+        crypt.Open(filePath.u8string());
         crypt.Dump(outputFolder.u8string());
         crypt.FixMetadata();
 

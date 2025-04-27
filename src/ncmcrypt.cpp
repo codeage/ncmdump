@@ -329,7 +329,11 @@ NeteaseCrypt::~NeteaseCrypt()
     mFile.close();
 }
 
-NeteaseCrypt::NeteaseCrypt(std::string const &path)
+NeteaseCrypt::NeteaseCrypt()
+{
+}
+
+void NeteaseCrypt::Open(std::string const& path)
 {
     if (!openFile(path))
     {

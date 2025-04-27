@@ -49,6 +49,7 @@ private:
 	std::ifstream mFile;
 	unsigned char mKeyBox[256]{};
 	NeteaseMusicMetadata* mMetaData;
+	std::string mErrorMessage;
 
 private:
 	bool isNcmFile();
@@ -60,12 +61,15 @@ private:
 public:
 	const std::string& filepath() const { return mFilepath; }
 	const std::filesystem::path dumpFilepath() const { return mDumpFilepath; }
+	const void errorMessage(const char *message) { mErrorMessage = message; }
+	const std::string& errorMessage() const { return mErrorMessage; }
 
 public:
-	NeteaseCrypt(std::string const&);
+	NeteaseCrypt();
 	~NeteaseCrypt();
 
 public:
+	void Open(std::string const&);
 	void Dump(std::string const&);
 	void FixMetadata();
 };
