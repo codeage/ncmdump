@@ -1,11 +1,11 @@
-﻿#include "libncmdump.h"
+#include "libncmdump.h"
 #include <filesystem>
 #include <Windows.h>
 
 namespace fs = std::filesystem;
 
 extern "C" {
-	API NeteaseCrypt* CreateNeteaseCrypt(const char* path) {
+	API NeteaseCrypt* CreateNeteaseCrypt() {
 		return new NeteaseCrypt();
 	}
 
@@ -55,15 +55,28 @@ extern "C" {
 		if (!buffer || bufferSize <= 0)
 			return;
 
-		std::strncpy(buffer, neteaseCrypt->dumpFilepath().string().c_str(), bufferSize - 1);
-		buffer[bufferSize - 1] = '\0';
+		try
+		{
+			std::strncpy(buffer, neteaseCrypt->dumpFilepath().u8string().c_str(), bufferSize - 1);
+			buffer[bufferSize - 1] = '\0';
+		}
+		catch (const std::exception& e)
+		{
+			neteaseCrypt->errorMessage(e.what());
+		}
 	}
 
 	API void GetErrorMessage(NeteaseCrypt* neteaseCrypt, char* buffer, int bufferSize) {
 		if (!buffer || bufferSize <= 0)
 			return;
 
-		std::strncpy(buffer, neteaseCrypt->errorMessage().c_str(), bufferSize - 1);
-		buffer[bufferSize - 1] = '\0';
+		try
+		{
+			std::strncpy(buffer, neteaseCrypt->errorMessage().c_str(), bufferSize - 1);
+			buffer[bufferSize - 1] = '\0';
+		}
+		catch (const std::exception&)
+		{
+		}
 	}
 }
